@@ -1,5 +1,5 @@
 import { TypesOfInterest } from '@prisma/client';
-import { IsNotEmpty, MinLength } from 'class-validator';
+import { IsEnum, IsNotEmpty, MinLength } from 'class-validator';
 
 export class CreateAccountsPayableDto {
   @IsNotEmpty({ message: 'O campo "name" não pode ser vazio' })
@@ -16,5 +16,6 @@ export class CreateAccountsPayableDto {
   time: number;
 
   @IsNotEmpty({ message: 'O campo "type" não pode ser vazio' })
+  @IsEnum(TypesOfInterest)
   type: TypesOfInterest;
 }

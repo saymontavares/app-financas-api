@@ -7,13 +7,13 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class AccountsPayableService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(createAccountsPayableDto: CreateAccountsPayableDto) {
+  async create(createAccountsPayableDto: CreateAccountsPayableDto) {
     return this.prisma.accounts_payable.create({
       data: createAccountsPayableDto,
     });
   }
 
-  findAll() {
+  async findAll() {
     return this.prisma.accounts_payable.findMany();
   }
 
