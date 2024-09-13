@@ -1,5 +1,13 @@
-import { TypesOfInterest } from '@prisma/client';
-import { IsEnum, IsNotEmpty, MinLength } from 'class-validator';
+import { installments, TypesOfInterest } from '@prisma/client';
+import { Type } from 'class-transformer';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  MinLength,
+  ValidateNested,
+} from 'class-validator';
+import { createInstallmentDto } from './create-installment.dto';
 
 export class CreateAccountsPayableDto {
   @IsNotEmpty({ message: 'O campo "name" não pode ser vazio' })
@@ -18,4 +26,9 @@ export class CreateAccountsPayableDto {
   @IsNotEmpty({ message: 'O campo "type" não pode ser vazio' })
   @IsEnum(TypesOfInterest)
   type: TypesOfInterest;
+
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => createInstallmentDto)
+  installments?: createInstallmentDto[];
 }

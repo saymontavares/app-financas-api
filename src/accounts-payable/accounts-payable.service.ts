@@ -9,7 +9,14 @@ export class AccountsPayableService {
 
   async create(createAccountsPayableDto: CreateAccountsPayableDto) {
     return this.prisma.accounts_payable.create({
-      data: createAccountsPayableDto,
+      data: {
+        ...createAccountsPayableDto,
+        installments: createAccountsPayableDto.installments
+          ? {
+              create: createAccountsPayableDto.installments,
+            }
+          : undefined,
+      },
     });
   }
 

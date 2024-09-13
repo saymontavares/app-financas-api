@@ -33,6 +33,7 @@ model installments {
   installmentNumber Int
   totalPaid         Decimal          @db.Money
   accruedInterest   Decimal          @db.Money
+  installmentValue  Decimal          @db.Money
   itPaid            Boolean          @default(false)
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
