@@ -12,6 +12,7 @@ CREATE TABLE "accounts_payable" (
     "rate" INTEGER NOT NULL,
     "time" INTEGER NOT NULL,
     "type" "TypesOfInterest" NOT NULL,
+    "totalInterest" MONEY,
     "status" "StatusAccountPayable" NOT NULL DEFAULT 'PENDING',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

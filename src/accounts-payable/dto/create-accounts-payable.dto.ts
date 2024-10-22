@@ -1,4 +1,4 @@
-import { installments, TypesOfInterest } from '@prisma/client';
+import { TypesOfInterest } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   IsEnum,
@@ -22,6 +22,10 @@ export class CreateAccountsPayableDto {
 
   @IsNotEmpty({ message: 'O campo "time" não pode ser vazio' })
   time: number;
+
+  @IsNotEmpty({ message: 'O campo "totalInterest" não pode ser vazio' })
+  @IsOptional()
+  totalInterest: number;
 
   @IsNotEmpty({ message: 'O campo "type" não pode ser vazio' })
   @IsEnum(TypesOfInterest)

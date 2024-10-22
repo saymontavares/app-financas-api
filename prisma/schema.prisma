@@ -14,16 +14,17 @@ datasource db {
 }
 
 model accounts_payable {
-  id           Int                  @id @default(autoincrement())
-  name         String
-  capital      Decimal              @db.Money
-  rate         Int
-  time         Int
-  type         TypesOfInterest
-  status       StatusAccountPayable @default(PENDING)
-  createdAt    DateTime             @default(now())
-  updatedAt    DateTime             @updatedAt
-  installments installments[]
+  id            Int                  @id @default(autoincrement())
+  name          String
+  capital       Decimal              @db.Money
+  rate          Int
+  time          Int
+  type          TypesOfInterest
+  totalInterest Decimal?             @db.Money
+  status        StatusAccountPayable @default(PENDING)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  installments  installments[]
 }
 
 model installments {
