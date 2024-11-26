@@ -56,4 +56,7 @@ export class AccountsPayableController {
   remove(@Param('id') id: string) {
     return this.accountsPayableService.remove(+id);
   }
+
+  @Patch(':id')
+  updateInstallment() {}
 }
