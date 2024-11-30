@@ -4,7 +4,7 @@ import { UpdateAccountsPayableDto } from './dto/update-accounts-payable.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { createInstallmentDto } from './dto/create-installment.dto';
 import { Decimal } from '@prisma/client/runtime/library';
-import { TypesOfInterest } from '@prisma/client';
+import { StatusAccountPayable, TypesOfInterest } from '@prisma/client';
 
 @Injectable()
 export class AccountsPayableService {
@@ -17,7 +17,7 @@ export class AccountsPayableService {
       data: {
         ...createAccountsPayableDto,
         installments: {
-          create: installmentList, // Cria as parcelas associadas à conta
+          create: installmentList,
         },
       },
     });
@@ -84,28 +84,64 @@ export class AccountsPayableService {
     return `This action removes a #${id} accountsPayable`;
   }
 
-  updateInstallment(id: number) {
-    return `id: ${id}`;
+  async updateInstallment(id: number, installments: string[]) {
+    await this.prisma.installments.updateMany({
+      data: {
+        itPaid: false,
+      },
+      where: {
+        id: {
+          notIn: installments.map((installment) => Number(installment)),
+        },
+        accountId: id,
+      },
+    });
+
+    await this.prisma.installments.updateMany({
+      data: {
+        itPaid: true,
+      },
+      where: {
+        id: {
+          in: installments.map((installment) => Number(installment)),
+        },
+        accountId: id,
+      },
+    });
+
+    const dbInstallments = await this.prisma.installments.findMany({
+      where: {
+        accountId: id,
+      },
+    });
+    const allPaid = dbInstallments.every((installment) => installment.itPaid);
+
+    if (allPaid) {
+      await this.prisma.accounts_payable.update({
+        data: {
+          status: StatusAccountPayable.PAID,
+        },
+        where: {
+          id: id,
+        },
+      });
+    }
   }
 
   createInstallments(createAccountsPayableDto: CreateAccountsPayableDto) {
     const { capital, rate, time, type } = createAccountsPayableDto;
     const installmentList: createInstallmentDto[] = [];
-
-    // Declaração das variáveis fora do switch
     let totalPaidSoFar = 0;
     let totalInterestSoFar = 0;
-    let currentBalance = capital; // Saldo devedor atualizado
-    const totalToPay = capital + (capital * rate * time) / 100; // Total a pagar (capital + juros)
+    let currentBalance = capital;
+    const totalToPay = capital + (capital * rate * time) / 100;
 
     switch (type) {
       case TypesOfInterest.SIMPLE:
-        // Cálculo para Juros Simples
         const interest = (capital * rate * time) / 100;
         const totalAmount = capital + interest;
         const installmentValue = totalAmount / time;
 
-        // Geração das parcelas com Juros Simples
         for (let i = 1; i <= time; i++) {
           totalPaidSoFar += installmentValue;
           totalInterestSoFar = (capital * rate * i) / 100;
@@ -121,9 +157,8 @@ export class AccountsPayableService {
         break;
 
       case TypesOfInterest.COMPOSITE:
-        // Cálculo para Juros Compostos
-        const r = rate / 100; // Taxa de juros por período
-        const n = time; // Número de períodos (meses)
+        const r = rate / 100;
+        const n = time;
 
         // Geração das parcelas com Juros Compostos
         for (let i = 1; i <= n; i++) {

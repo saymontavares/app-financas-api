@@ -10,6 +10,7 @@ import {
 import { AccountsPayableService } from './accounts-payable.service';
 import { CreateAccountsPayableDto } from './dto/create-accounts-payable.dto';
 import { UpdateAccountsPayableDto } from './dto/update-accounts-payable.dto';
+// import { UpdateInstallmentDto } from './dto/update-installment.dto';
 
 @Controller('accounts-payable')
 export class AccountsPayableController {
@@ -56,7 +57,4 @@ export class AccountsPayableController {
   remove(@Param('id') id: string) {
     return this.accountsPayableService.remove(+id);
   }
-
-  @Patch(':id')
-  updateInstallment() {}
 }
